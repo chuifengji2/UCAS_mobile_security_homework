@@ -1,28 +1,19 @@
 package com.example.act_test;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -32,82 +23,164 @@ public class FirstActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.first_layout);
-        Button button1 = (Button) findViewById(R.id.button_1);
-        Button button2 = (Button) findViewById(R.id.button_2);
-        Button button3 = (Button) findViewById(R.id.button_3);
-        button1.setOnClickListener(new View.OnClickListener() {
+        Button btn_sysinfo = (Button) findViewById(R.id.btn_sysinfo);
+        Button btn_appinfo = (Button) findViewById(R.id.btn_appinfo);
+        Button btn_userinfo = (Button) findViewById(R.id.btn_userinfo);
+        Button btn_sms = (Button) findViewById(R.id.btn_sms);
+        Button btn_contacts = (Button) findViewById(R.id.btn_contacts);
+        Button btn_callhist = (Button) findViewById(R.id.btn_callhist);
+
+        LinearLayout btnsLayout = (LinearLayout) findViewById(R.id.btnsLayout);
+
+        TextView txt_sysinfo = new TextView(FirstActivity.this);
+        txt_sysinfo.setTextSize(16);
+        txt_sysinfo.setVisibility(View.GONE);
+
+        TextView txt_appinfo = new TextView(FirstActivity.this);
+        txt_appinfo.setTextSize(16);
+        txt_appinfo.setVisibility(View.GONE);
+
+        TextView txt_userinfo = new TextView(FirstActivity.this);
+        txt_userinfo.setTextSize(16);
+        txt_userinfo.setVisibility(View.GONE);
+
+        TextView txt_sms = new TextView(FirstActivity.this);
+        txt_sms.setTextSize(16);
+        txt_sms.setVisibility(View.GONE);
+
+        TextView txt_contacts = new TextView(FirstActivity.this);
+        txt_contacts.setTextSize(16);
+        txt_contacts.setVisibility(View.GONE);
+
+        TextView txt_callhist = new TextView(FirstActivity.this);
+        txt_callhist.setTextSize(16);
+        txt_callhist.setVisibility(View.GONE);
+
+        LinearLayout linear_sysinfo = new LinearLayout(FirstActivity.this);
+        linear_sysinfo.setOrientation(LinearLayout.VERTICAL);
+        linear_sysinfo.addView(txt_sysinfo);
+        ScrollView scroll_sysinfo = new ScrollView(FirstActivity.this);
+        scroll_sysinfo.addView(linear_sysinfo);
+
+        LinearLayout linear_appinfo = new LinearLayout(FirstActivity.this);
+        linear_appinfo.setOrientation(LinearLayout.VERTICAL);
+        linear_appinfo.addView(txt_appinfo);
+        ScrollView scroll_appinfo = new ScrollView(FirstActivity.this);
+        scroll_appinfo.addView(linear_appinfo);
+
+        LinearLayout linear_sms = new LinearLayout(FirstActivity.this);
+        linear_sms.setOrientation(LinearLayout.VERTICAL);
+        linear_sms.addView(txt_sms);
+        ScrollView scroll_sms = new ScrollView(FirstActivity.this);
+        scroll_sms.addView(linear_sms);
+
+        LinearLayout linear_contacts = new LinearLayout(FirstActivity.this);
+        linear_contacts.setOrientation(LinearLayout.VERTICAL);
+        linear_contacts.addView(txt_contacts);
+        ScrollView scroll_contacts = new ScrollView(FirstActivity.this);
+        scroll_contacts.addView(linear_contacts);
+
+        LinearLayout linear_callhist = new LinearLayout(FirstActivity.this);
+        linear_callhist.setOrientation(LinearLayout.VERTICAL);
+        linear_callhist.addView(txt_callhist);
+        ScrollView scroll_callhist = new ScrollView(FirstActivity.this);
+        scroll_callhist.addView(linear_callhist);
+
+        btnsLayout.addView(scroll_sysinfo, btnsLayout.indexOfChild(btn_sysinfo)+1);
+        btnsLayout.addView(scroll_appinfo, btnsLayout.indexOfChild(btn_appinfo)+1);
+        btnsLayout.addView(txt_userinfo, btnsLayout.indexOfChild(btn_userinfo)+1);
+        btnsLayout.addView(scroll_sms, btnsLayout.indexOfChild(btn_sms)+1);
+        btnsLayout.addView(scroll_contacts, btnsLayout.indexOfChild(btn_contacts)+1);
+        btnsLayout.addView(scroll_callhist, btnsLayout.indexOfChild(btn_callhist)+1);
+
+        SystemInfoCollector sysinfoCollector = new SystemInfoCollector(this);
+        AppInfoCollector appinfoCollector = new AppInfoCollector(this);
+        UserInfoCollector userInfoCollector = new UserInfoCollector(this);
+
+        btn_sysinfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String info = "";
-                info += "设备品牌: " + Build.BRAND + "\n";
-                info += "设备名称: " + Build.DEVICE + "\n";
-                info += "设备型号: " + Build.MODEL + "\n";
-                info += "设备制造商和型号: " + Build.PRODUCT + "\n";
-                info += "主板名称: " + Build.BOARD + "\n";
-                info += "设备引导程序版本号: " + Build.BOOTLOADER + "\n";
-                info += "设备显示的版本字符串: " + Build.DISPLAY + "\n";
-                info += "设备的唯一标识: " + Build.FINGERPRINT + "\n";
-                info += "设备版本号: " + Build.ID + "\n";
-                info += "设备制造商: " + Build.MANUFACTURER + "\n";
-                info += "设备序列号: " + Build.SERIAL + "\n";
-                info += "设备描述标签: " + Build.TAGS + "\n";
-                info += "设备类型: " + Build.TYPE + "\n";
-                info += "设备所有者的名称: " + Build.USER + "\n";
-                TextView textView = new TextView(FirstActivity.this);
-                textView.setText(info);
-                setContentView(textView);
+
+                String info = sysinfoCollector.getSystemInfo();
+
+                if (txt_sysinfo.getVisibility() != View.VISIBLE) {
+                    txt_sysinfo.setText(info);
+                    txt_sysinfo.setVisibility(View.VISIBLE);
+                } else {
+                    txt_sysinfo.setVisibility(View.GONE);
+                }
             }
         });
 
-        button2.setOnClickListener(new View.OnClickListener() {
+        btn_appinfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String info = "";
-                PackageManager pm = getPackageManager();
-                List<ApplicationInfo> apps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+                String info = appinfoCollector.getAppInfo();
 
-                for (ApplicationInfo app : apps) {
-                    String appName = app.loadLabel(pm).toString();
-                    String packageName = app.packageName;
-                    String versionName = "";
-                    int versionCode = 0;
-                    try {
-                        PackageInfo packageInfo = pm.getPackageInfo(packageName, 0);
-                        versionName = packageInfo.versionName;
-                        versionCode = packageInfo.versionCode;
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    info += "App Name: " + appName + ", Package Name: " + packageName + ", Version Name: " + versionName + ", Version Code: " + versionCode + "\n" + "\n";
+                if (txt_appinfo.getVisibility() != View.VISIBLE) {
+                    txt_appinfo.setText(info);
+                    txt_appinfo.setVisibility(View.VISIBLE);
+                } else {
+                    txt_appinfo.setVisibility(View.GONE);
                 }
 
-                ScrollView scrollView = new ScrollView(FirstActivity.this);
-
-                LinearLayout linearLayout = new LinearLayout(FirstActivity.this);
-                linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-                TextView textView = new TextView(FirstActivity.this);
-                textView.setText(info);
-                textView.setTextSize(20);
-                linearLayout.addView(textView);
-
-                scrollView.addView(linearLayout);
-                setContentView(scrollView);
             }
         });
 
-        button3.setOnClickListener(new View.OnClickListener() {
+        btn_userinfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String info = "";
-                TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                String deviceId = tm.getDeviceId();
-                String phoneNumber = tm.getLine1Number();
-                info += "deviceId:" + deviceId +"\n";
-                info += "phoneNumber:" + phoneNumber +"\n";
-                TextView textView = new TextView(FirstActivity.this);
-                textView.setText(info);
-                setContentView(textView);
+                String info = userInfoCollector.getTelephonyInfo();
+
+                if (txt_userinfo.getVisibility() != View.VISIBLE) {
+                    txt_userinfo.setText(info);
+                    txt_userinfo.setVisibility(View.VISIBLE);
+                } else {
+                    txt_userinfo.setVisibility(View.GONE);
+                }
+
+            }
+        });
+        btn_sms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String info = userInfoCollector.getSMSInfo();
+
+                if (txt_sms.getVisibility() != View.VISIBLE) {
+                    txt_sms.setText(info);
+                    txt_sms.setVisibility(View.VISIBLE);
+                } else {
+                    txt_sms.setVisibility(View.GONE);
+                }
+
+            }
+        });
+        btn_contacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String info = userInfoCollector.getContactsInfo();
+
+                if (txt_contacts.getVisibility() != View.VISIBLE) {
+                    txt_contacts.setText(info);
+                    txt_contacts.setVisibility(View.VISIBLE);
+                } else {
+                    txt_contacts.setVisibility(View.GONE);
+                }
+
+            }
+        });
+        btn_callhist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String info = userInfoCollector.getCallhistInfo();
+
+                if (txt_callhist.getVisibility() != View.VISIBLE) {
+                    txt_callhist.setText(info);
+                    txt_callhist.setVisibility(View.VISIBLE);
+                } else {
+                    txt_callhist.setVisibility(View.GONE);
+                }
+
             }
         });
     }
